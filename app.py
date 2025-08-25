@@ -264,41 +264,45 @@ if missing_files:
     st.error(f"❌ ไม่พบไฟล์ Redline: {missing_files}")
     st.stop()
 
-points_file = st.file_uploader("📂 Upload Points KML", type="kml")
+# ให้ user อัปโหลดหลาย points.kml พร้อมกัน
+points_files = st.file_uploader(
+    "📂 Upload Points KML (multiple files allowed)", 
+    type="kml", 
+    accept_multiple_files=True
+)
 THRESHOLD_M = st.number_input("📏 Threshold distance (meters)", min_value=1, value=111, step=10)
 
+# สร้าง dict สำหรับส่งเข้า analyze_points_vs_redlines
+points_dict = {}
+if points_files:
+    for uploaded_file in points_files:
+        # ใช้ชื่อไฟล์เป็น key
+        key_name = uploaded_file.name
+        path = f"uploaded/{uploaded_file.name}"
+        
+        # สร้างโฟลเดอร์ uploaded ถ้ายังไม่มี
+        os.makedirs("uploaded", exist_ok=True)
+        with open(path, "wb") as f:
+            f.write(uploaded_file.read())
+        
+        points_dict[key_name] = path
+
+# รันวิเคราะห์ถ้ามีไฟล์
 if st.button("🚀 Analyze"):
-    if not points_file:
-        st.warning("⚠️ กรุณาอัปโหลด Points KML ก่อน")
+    points_df, redline_summary = analyze_points_vs_redlines(
+        points_dict,
+        REDLINE_FILE,  # redline list เป็น static อยู่แล้ว
+        threshold_m=THRESHOLD_M
+    )
+
+    if points_df is not None:
+        st.success("✅ Analysis Complete!")
+        st.write(f"📌 Total points analyzed: {len(points_df)}")
+        st.dataframe(points_df.head())
+
+        result_file = "result.xlsx"
+        write_results_to_excel(points_df, redline_summary, THRESHOLD_M, result_file)
+        with open(result_file, "rb") as f:
+            st.download_button("⬇️ Download Excel", f, file_name="result.xlsx")
     else:
-        points_path = "points_uploaded.kml"
-        with open(points_path, "wb") as f:
-            f.write(points_file.read())
-
-        points_grouped = {"uploaded_points": points_path}  # dict ยังคงต้องเป็น dict
-
-        try:
-            with st.spinner("⏳ กำลังวิเคราะห์..."):
-                points_df, redline_summary = analyze_points_vs_redlines(
-                    points_grouped,
-                    REDLINE_FILE,   # ส่งเป็น list ตรง ๆ
-                    threshold_m=THRESHOLD_M
-                )
-        except Exception as e:
-            st.error(f"❌ เกิดข้อผิดพลาด: {e}")
-            st.stop()
-
-        if points_df is not None:
-            st.success("✅ Analysis Complete!")
-            st.write(f"📌 Total points analyzed: {len(points_df)}")
-            st.write(f"📏 Threshold: {THRESHOLD_M} m")
-            st.dataframe(points_df.head(20))
-
-            # Excel result
-            result_file = "result.xlsx"
-            write_results_to_excel(points_df, redline_summary, THRESHOLD_M, result_file)
-
-            with open(result_file, "rb") as f:
-                st.download_button("⬇️ Download Excel", f, file_name="result.xlsx")
-        else:
-            st.error("❌ วิเคราะห์ไม่สำเร็จ")
+        st.error("❌ วิเคราะห์ไม่สำเร็จ")
