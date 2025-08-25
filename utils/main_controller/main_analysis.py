@@ -179,7 +179,7 @@ def analyze_points_vs_redlines(points_grouped, redlines_files, threshold_m=100):
                 unique_by_full.append(r)
 
         # อัพเดต entry ของ redline
-        redline_summary_counts[name].{
+        redline_summary_counts[name].update({
             'count': len(unique_by_full),
             'count_by_coords': len(unique_by_coords),
             'count_by_details': len(unique_by_full),
@@ -188,7 +188,7 @@ def analyze_points_vs_redlines(points_grouped, redlines_files, threshold_m=100):
             'points_by_coords': unique_by_coords,
             'points_by_details': unique_by_full,
             'raw_matches': matches
-        }
+        })
 
 
         if len(unique_by_coords) != len(unique_by_full):
