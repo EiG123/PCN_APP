@@ -5,7 +5,8 @@ from utils.excel_controller.write_results_to_excel import write_results_to_excel
 import os
 
 # Static redline file (อยู่ใน repo)
-REDLINE_FILE = "data/redlines.kml"
+from config import REDLINE_FILE
+
 
 st.title("🌍 KML Points vs Redline Analyzer")
 
