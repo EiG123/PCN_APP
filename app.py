@@ -265,8 +265,8 @@ if st.button("🚀 Analyze") and points_file:
 
     # Run analysis (ใช้ redline แบบ static)
     points_df, redline_summary = analyze_points_vs_redlines(
-        {"uploaded_points": points_path},
-        {"static_redline": REDLINE_FILE},
+        points_path,
+        REDLINE_FILE,
         threshold_m=THRESHOLD_M
     )
 
