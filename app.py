@@ -3,6 +3,7 @@ import os
 from utils.parse_controller.parse_points import parse_kml_points
 from utils.main_controller.main_analysis import analyze_points_vs_redlines
 from utils.excel_controller.write_results_to_excel import write_results_to_excel
+from datetime import datetime
 
 st.set_page_config(page_title="🌍 KML Points vs Redlines", layout="wide")
 st.title("🌍 KML Points vs Redlines Analyzer")
@@ -288,11 +289,13 @@ if points_files:
         points_dict[key_name] = path
 
 # รันวิเคราะห์ถ้ามีไฟล์
-if st.button("🚀 Analyze"):
+if st.button("🚀 Analyze") and points_dict:
+    progress_bar = st.progress(0)
     points_df, redline_summary = analyze_points_vs_redlines(
         points_dict,
-        REDLINE_FILE,  # redline list เป็น static อยู่แล้ว
-        threshold_m=THRESHOLD_M
+        REDLINE_FILE,
+        threshold_m=THRESHOLD_M,
+        progress_callback=lambda pct: progress_bar.progress(pct)
     )
 
     if points_df is not None:
@@ -300,9 +303,10 @@ if st.button("🚀 Analyze"):
         st.write(f"📌 Total points analyzed: {len(points_df)}")
         st.dataframe(points_df.head())
 
-        result_file = "result.xlsx"
-        write_results_to_excel(points_df, redline_summary, THRESHOLD_M, result_file)
-        with open(result_file, "rb") as f:
-            st.download_button("⬇️ Download Excel", f, file_name="result.xlsx")
+        result_file = f"result_{THRESHOLD_M}_meter_{datetime.now().strftime('%Y%m%d_%H%M%S')}.xlsx"
+        final_file = write_results_to_excel(points_df, redline_summary, THRESHOLD_M, result_file)
+
+        with open(final_file, "rb") as f:
+            st.download_button("⬇️ Download Excel", f, file_name=os.path.basename(final_file))
     else:
         st.error("❌ วิเคราะห์ไม่สำเร็จ")
