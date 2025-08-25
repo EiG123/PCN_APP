@@ -44,19 +44,6 @@ def write_results_to_excel(points_df, redline_summary, threshold_m, output_path=
         # ใช้ raw_matches สำหรับการแสดงจำนวนจริงใน detail sheet
         raw_matches = info['raw_matches']
         
-        if not pts_for_summary:
-            summary_rows.append({
-                "เส้นสายไฟ": rl_name,
-                "จำนวนจุดไม่ซ้ำ": 0,
-                "จำนวนจุดรวมซ้ำ": 0,
-                "Close Action": 0,
-                "Confirm": 0,
-                "Revise": 0,
-                "อื่นๆ": 0,
-                "ระยะเฉลี่ย (m)": 0
-            })
-            continue
-        
         # ใช้ pts_for_summary สำหรับการนับประเภท (เพื่อไม่ให้นับซ้ำ)
         df_summary = pd.DataFrame(pts_for_summary)
         df_raw = pd.DataFrame(raw_matches) if raw_matches else pd.DataFrame()
