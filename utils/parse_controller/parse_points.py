@@ -1,5 +1,6 @@
 import os
 import xml.etree.ElementTree as ET
+import logging
 
 ns = {'kml': 'http://www.opengis.net/kml/2.2'}
 
