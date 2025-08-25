@@ -67,13 +67,17 @@ def analyze_points_vs_redlines(points_grouped, redlines_files, threshold_m=100):
 
     # 2) Load redlines
     redline_geoms = []
-    for rl_name, fname in redlines_files.items():
+    # ก่อนหน้านี้
+    # for rl_name, fname in redlines_files.items():
+    # เปลี่ยนเป็น
+    for fname in redlines_files:
         geom = parse_kml_lines(fname)
         if geom is None:
             logging.warning("redline %s ไม่มี geometry - ข้าม", fname)
             continue
-        redline_geoms.append({'name': rl_name, 'geom': geom, 'epsg_cache': {}})
+        redline_geoms.append({'name': os.path.basename(fname), 'geom': geom, 'epsg_cache': {}})
         logging.info("โหลด redline: %s", fname)
+
 
     if not redline_geoms:
         logging.error("ไม่พบ redlines ที่ใช้งานได้")
