@@ -140,6 +140,21 @@ def analyze_points_vs_redlines(points_grouped, redlines_files, threshold_m=100):
     points_df = pd.DataFrame(points_results)
     redline_summary_counts = {}
 
+    # สร้าง entry สำหรับทุก redline ล่วงหน้า
+    for rl in redline_geoms:
+        name = rl['name']
+        redline_summary_counts[name] = {
+            'count': 0,
+            'count_by_coords': 0,
+            'count_by_details': 0,
+            'total_matches': 0,
+            'points': [],
+            'points_by_coords': [],
+            'points_by_details': [],
+            'raw_matches': []
+        }
+
+    # เติมข้อมูลจาก matched points
     for name, matches in redline_matches.items():
         seen_coords = set()
         unique_by_coords = []
@@ -163,7 +178,8 @@ def analyze_points_vs_redlines(points_grouped, redlines_files, threshold_m=100):
                 seen_full.add(full_key)
                 unique_by_full.append(r)
 
-        redline_summary_counts[name] = {
+        # อัพเดต entry ของ redline
+        redline_summary_counts[name].update({
             'count': len(unique_by_full),
             'count_by_coords': len(unique_by_coords),
             'count_by_details': len(unique_by_full),
@@ -172,7 +188,8 @@ def analyze_points_vs_redlines(points_grouped, redlines_files, threshold_m=100):
             'points_by_coords': unique_by_coords,
             'points_by_details': unique_by_full,
             'raw_matches': matches
-        }
+        })
+
 
         if len(unique_by_coords) != len(unique_by_full):
             logging.info(
