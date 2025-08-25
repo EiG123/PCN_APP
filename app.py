@@ -294,8 +294,7 @@ if st.button("🚀 Analyze") and points_dict:
     points_df, redline_summary = analyze_points_vs_redlines(
         points_dict,
         REDLINE_FILE,
-        threshold_m=THRESHOLD_M,
-        progress_callback=lambda pct: progress_bar.progress(pct)
+        threshold_m=THRESHOLD_M
     )
 
     if points_df is not None:
