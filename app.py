@@ -6,8 +6,15 @@ from utils.excel_controller.write_results_to_excel import write_results_to_excel
 from datetime import datetime
 
 st.set_page_config(page_title="🌍 KML Points vs Redlines", layout="wide")
-st.title("🌍 KML Points vs Redlines Analyzer")
+st.title("🌍 PCN KML Points vs Redlines Analyzer")
 
+st.markdown("""
+### 📘 วิธีใช้งาน
+1. อัปโหลดไฟล์ **Faults Points KML**  
+2. ใส่ค่า **Threshold** (ระยะระหว่างจุดกับ Redline)  
+3. กด **Analyze**  
+4. ดาวน์โหลดผลลัพธ์ (.xlsx)
+""")
 
 
 REDLINE_FILE = [
